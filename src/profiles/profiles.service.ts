@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { CreateProfileDto } from './dto/create-profile-dto';
 import { UpdateProfileDto } from './dto/update-profile-dto';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class ProfilesService {
@@ -63,7 +63,7 @@ export class ProfilesService {
     return this.prisma.profile.delete({
       where: {
         id,
-      }
+      },
     });
   }
 }
