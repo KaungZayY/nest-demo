@@ -3,10 +3,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import { ProfilesGuard } from '../src/profiles/profiles.guard';
 import { INestApplication } from '@nestjs/common';
+import { execSync } from 'child_process';
+import { PrismaService } from '../src/prisma.service';
 
 describe('Profiles', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
   let profileId: number;
+
+  // run migrations on TEST DB
+  execSync('npx prisma migrate deploy', {
+    env: {
+      ...process.env,
+      DATABASE_URL: process.env.DATABASE_URL,
+    },
+  });
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -18,10 +29,12 @@ describe('Profiles', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    prisma = moduleFixture.get(PrismaService);
   });
 
   afterAll(async () => {
     await app.close();
+    await prisma.$disconnect();
   });
 
   describe('/profiles (GET)', () => {
